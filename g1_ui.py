@@ -67,14 +67,14 @@ def start_game():
         "ping" : pygame.mixer.Sound("data/ping.wav"),
         "click" : pygame.mixer.Sound("data/click.wav"),
         "da-ding" : pygame.mixer.Sound("data/da-ding.wav"),
-        "warn1" :pygame.mixer.Sound("data/warn1.mp3"),
-        "warn2" :pygame.mixer.Sound("data/warn2.mp3")
+        "warn" :pygame.mixer.Sound("data/warn.mp3"),
+        # "warn2" :pygame.mixer.Sound("data/warn2.mp3")
     }
     sounds["ping"].set_volume(5)
     sounds["click"].set_volume(5)
     sounds["da-ding"].set_volume(5)
-    sounds["warn1"].set_volume(5)
-    sounds["warn2"].set_volume(5)
+    # sounds["warn1"].set_volume(5)
+    sounds["warn"].set_volume(5)
 
     #canvas declaration
     window = pygame.display.set_mode((WIDTH, HEIGHT), 0, 32)
@@ -140,6 +140,7 @@ def start_game():
                 response = GATTResponse()   
                 l_score_extra=0
 
+
             req.read_by_handle_async(0x000e, response)
             if response.received():
                 # print "1 works"
@@ -148,6 +149,7 @@ def start_game():
                 if hit_1 == 1:
                     l_score_extra += (ball_pos[0]*400)/WIDTH/float(WIDTH)
                     pygame.draw.polygon(window, RED, [[paddle1_pos[0] - HALF_PAD_WIDTH, paddle1_pos[1] - HALF_PAD_HEIGHT], [paddle1_pos[0] - HALF_PAD_WIDTH, paddle1_pos[1] + HALF_PAD_HEIGHT], [paddle1_pos[0] + HALF_PAD_WIDTH, paddle1_pos[1] + HALF_PAD_HEIGHT], [paddle1_pos[0] + HALF_PAD_WIDTH, paddle1_pos[1] - HALF_PAD_HEIGHT]], 0)
+   	        # top.update_idletasks()
         else:    
             if not req1.is_connected():
                 try:
@@ -166,27 +168,30 @@ def start_game():
                 if hit_2 == 1:
                     r_score_extra += ((WIDTH-ball_pos[0])*400)/WIDTH/float(WIDTH)
                     pygame.draw.polygon(window, RED, [[paddle2_pos[0] - HALF_PAD_WIDTH, paddle2_pos[1] - HALF_PAD_HEIGHT], [paddle2_pos[0] - HALF_PAD_WIDTH, paddle2_pos[1] + HALF_PAD_HEIGHT], [paddle2_pos[0] + HALF_PAD_WIDTH, paddle2_pos[1] + HALF_PAD_HEIGHT], [paddle2_pos[0] + HALF_PAD_WIDTH, paddle2_pos[1] - HALF_PAD_HEIGHT]], 0)
-        
+            # draw(canvas)
         #ball collision check on top and bottom walls
         if int(ball_pos[1]) <= BALL_RADIUS:
             ball_vel[1] = - ball_vel[1]
             sounds["da-ding"].play()
+            # draw(canvas)
         if int(ball_pos[1]) >= HEIGHT + 1 - BALL_RADIUS:
             ball_vel[1] = -ball_vel[1]
             sounds["da-ding"].play()
-            # sounds["ping"].play()
-        #ball collison check on gutters or paddles
+            # draw(canvas)
+	        #ball collison check on gutters or paddles
         if int(ball_pos[0])<=200 and hit_1==0:
-            sounds["warn1"].play()
+            sounds["warn"].play()
+            # draw(canvas)
         if int(ball_pos[0])>=1400 and hit_2==0:
-            sounds["warn2"].play()
-            
+            sounds["warn"].play()
+            # draw(canvas)          
         if int(ball_pos[0]) <= BALL_RADIUS + PAD_WIDTH and int(ball_pos[1]) in range(paddle1_pos[1] - HALF_PAD_HEIGHT,paddle1_pos[1] + HALF_PAD_HEIGHT,1) and hit_1==1:
             ball_vel[0] = -ball_vel[0]
             sounds["click"].play()
             l_score -= int(l_score_extra)
             l_score_extra = 0
-            # sounds["ping"].play()
+            # draw(canvas)
+          # sounds["ping"].play()
         elif int(ball_pos[0]) <= BALL_RADIUS + PAD_WIDTH:
             if not finish_flag:
                 l_score -= 10
@@ -195,13 +200,13 @@ def start_game():
             sounds["ping"].play()
             time.sleep(2)
             ball_init(True)
-             
+            # draw(canvas) 
         if int(ball_pos[0]) >= WIDTH + 1 - BALL_RADIUS - PAD_WIDTH and int(ball_pos[1]) in range(paddle2_pos[1] - HALF_PAD_HEIGHT,paddle2_pos[1] + HALF_PAD_HEIGHT,1) and hit_2==1:
             ball_vel[0] = -ball_vel[0]
             sounds["click"].play()
             r_score -= int(r_score_extra)
             r_score_extra = 0
-            
+            # draw(canvas)     
         elif int(ball_pos[0]) >= WIDTH + 1 - BALL_RADIUS - PAD_WIDTH:
             if not finish_flag:
                 r_score -= 10
@@ -210,7 +215,7 @@ def start_game():
             sounds["ping"].play()
             time.sleep(2)
             ball_init(False)
-     
+            # draw(canvas)
         #update scores
         myfont1 = pygame.font.SysFont(None,48)
         myfont2 = pygame.font.SysFont(None,48)
@@ -227,6 +232,7 @@ def start_game():
                 canvas.blit(label2, (1050, 20)) 
                 canvas.blit(label5, (290,65))
                 canvas.blit(label6, (1090,65)) 
+                # top.update_idletasks()
         else:
             finish_flag = 1
             if l_score>r_score:
@@ -242,6 +248,7 @@ def start_game():
             else:
                 label3=myfont1.render("MATCH DRAW",1, (0,0,255))
                 canvas.blit(label3, (850,20))
+                # draw(canvas)
      
     
     init()
